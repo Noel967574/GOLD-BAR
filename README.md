@@ -18,6 +18,10 @@ npm run build
 npm run start
 ```
 
+## Deploy to Render
+
+The included `render.yaml` configures one Node web service and a 1 GB persistent disk for the SQLite database and uploaded product photos. In Render, create a Blueprint from this repository and branch `main`, review the paid service and disk charges, and provide `ADMIN_EMAIL` and a strong `ADMIN_PASSWORD` when prompted. Render generates `APP_SECRET`. Production startup refuses to use the default development admin password. Keep the Render disk attached at `/var/data`; removing it deletes the live database and uploaded photos.
+
 ## Store management
 
 Open `/admin` and sign in with the configured admin account. The Store studio provides:

@@ -3,7 +3,9 @@ import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-export const dataDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
+export const dataDir = process.env.DATA_DIR
+  ? path.resolve(process.env.DATA_DIR)
+  : path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data');
 mkdirSync(dataDir, { recursive: true });
 
 export const db = new DatabaseSync(path.join(dataDir, 'site.db'));

@@ -188,6 +188,17 @@ export function consumeReset(token) {
 }
 
 export function ensureAdmin() {
+  if (PROD) {
+    if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
+      throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD before starting in production.');
+    }
+    if (passwordPolicy(process.env.ADMIN_PASSWORD)) {
+      throw new Error('ADMIN_PASSWORD must be at least 8 characters and contain a letter and a number.');
+    }
+    if (!process.env.APP_SECRET || process.env.APP_SECRET.length < 32) {
+      throw new Error('Set APP_SECRET to at least 32 characters before starting in production.');
+    }
+  }
   const email = (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase();
   const existing = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   if (existing) {
