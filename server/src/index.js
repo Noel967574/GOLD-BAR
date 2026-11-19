@@ -110,13 +110,13 @@ app.use('/api/account', csrfGuard, accountRoutes);
 app.use('/api/orders', csrfGuard, storeRoutes);
 app.use('/api/admin', csrfGuard, adminRoutes);
 
-app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
-
-const clientDist = path.resolve(process.cwd(), '..', 'client', 'dist');
+const clientDist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'client', 'dist');
 if (existsSync(clientDist)) {
   app.use(express.static(clientDist));
   app.get(/^\/(?!api).*/, (_req, res) => res.sendFile(path.join(clientDist, 'index.html')));
 }
+
+app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 app.use((err, _req, res, _next) => {
   console.error(err);
