@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { allContent, dataDir, db, getContent, setContent } from './db.js';
 import { seedContent } from './content.seed.js';
 import { seedPlans } from './plans.seed.js';
