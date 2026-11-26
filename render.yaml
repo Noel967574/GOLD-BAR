@@ -2,19 +2,13 @@ services:
   - type: web
     name: aurelia-gold
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm ci && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
-    disk:
-      name: aurelia-gold-data
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATA_DIR
-        value: /var/data
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
