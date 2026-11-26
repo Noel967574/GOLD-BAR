@@ -197,7 +197,7 @@ const goldBarProducts = [
     category: 'Other',
     weightGrams: 22.5,
     priceCents: 258139,
-    imageUrl: '/api/product-images/gbk-gold-bar-set-22-5g.png',
+    imageUrl: '/api/product-images/gbk-gold-bar-set-22-5g.jpg',
     stock: 1,
     featured: 0,
     active: 1
@@ -210,7 +210,7 @@ const goldBarProducts = [
     category: 'Other',
     weightGrams: 10,
     priceCents: 0,
-    imageUrl: '/api/product-images/royal-mint-britannia-10g.png',
+    imageUrl: '/api/product-images/royal-mint-britannia-10g.jpg',
     stock: 0,
     featured: 0,
     active: 0
@@ -223,7 +223,7 @@ const goldBarProducts = [
     category: 'Other',
     weightGrams: 1000,
     priceCents: 11416630,
-    imageUrl: '/api/product-images/hyrank-gold-bar-1kg.png',
+    imageUrl: '/api/product-images/hyrank-gold-bar-1kg.jpg',
     stock: 1,
     featured: 0,
     active: 1
@@ -240,6 +240,19 @@ const goldBarProducts = [
     stock: 1,
     featured: 0,
     active: 1
+  },
+  {
+    name: '999.9 Fine Gold Bar — 1 kg',
+    slug: 'generic-999-9-fine-gold-bar-1-kg',
+    description: 'Photo shows two bars marked 999.9 fine gold, net weight 1,000 g each. Verify authenticity, current price, and available stock before offering for sale.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 1000,
+    priceCents: 0,
+    imageUrl: '/api/product-images/generic-9999-gold-bar-1kg.jpg',
+    stock: 0,
+    featured: 0,
+    active: 0
   }
 ];
 
@@ -297,10 +310,12 @@ export function seedProducts() {
       p.priceCents, p.imageUrl, p.stock, p.featured, p.active
     );
   }
+  const updateGoldBarImage = db.prepare('UPDATE products SET image_url = ? WHERE slug = ?');
   for (const p of goldBarProducts) {
     insertSellerProduct.run(
       p.name, p.slug, p.description, p.karat, p.category, p.weightGrams,
       p.priceCents, p.imageUrl, p.stock, p.featured, p.active
     );
+    updateGoldBarImage.run(p.imageUrl, p.slug);
   }
 }
