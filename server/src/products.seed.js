@@ -9,7 +9,8 @@ const products = [
     category: 'Rings',
     weightGrams: 4.2,
     priceCents: 89500,
-    imageUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1000&q=85',
+    imageUrl: '/products/sculpted-signet-ring.svg',
+    legacyImageUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1000&q=85',
     stock: 8,
     featured: 1
   },
@@ -21,7 +22,8 @@ const products = [
     category: 'Earrings',
     weightGrams: 2.8,
     priceCents: 54500,
-    imageUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1000&q=85',
+    imageUrl: '/products/everyday-gold-hoops.svg',
+    legacyImageUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1000&q=85',
     stock: 12,
     featured: 1
   },
@@ -33,7 +35,8 @@ const products = [
     category: 'Necklaces',
     weightGrams: 5.1,
     priceCents: 119000,
-    imageUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1000&q=85',
+    imageUrl: '/products/fine-paperclip-chain.svg',
+    legacyImageUrl: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1000&q=85',
     stock: 6,
     featured: 1
   },
@@ -45,7 +48,8 @@ const products = [
     category: 'Bracelets',
     weightGrams: 6.4,
     priceCents: 99500,
-    imageUrl: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1000&q=85',
+    imageUrl: '/products/classic-rope-bracelet.svg',
+    legacyImageUrl: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1000&q=85',
     stock: 5,
     featured: 0
   },
@@ -57,7 +61,8 @@ const products = [
     category: 'Necklaces',
     weightGrams: 1.9,
     priceCents: 168000,
-    imageUrl: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1000&q=85',
+    imageUrl: '/products/petite-diamond-pendant.svg',
+    legacyImageUrl: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1000&q=85',
     stock: 4,
     featured: 0
   },
@@ -69,7 +74,8 @@ const products = [
     category: 'Rings',
     weightGrams: 3.6,
     priceCents: 109000,
-    imageUrl: 'https://images.unsplash.com/photo-1603561596112-db6f0bb9d8d8?auto=format&fit=crop&w=1000&q=85',
+    imageUrl: '/products/horizon-wedding-band.svg',
+    legacyImageUrl: 'https://images.unsplash.com/photo-1603561596112-db6f0bb9d8d8?auto=format&fit=crop&w=1000&q=85',
     stock: 7,
     featured: 0
   }
@@ -159,16 +165,44 @@ const sellerProducts = [
 export function seedProducts() {
   const insert = db.prepare(`
     INSERT INTO products
-      (name, slug, description, karat, category, weight_grams, price_cents, image_url, stock, featured)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (name, slug, description, karat, category, weight_grams, price_cents, image_url, stock, featured, active)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   if (db.prepare('SELECT COUNT(*) AS n FROM products').get().n === 0) {
     for (const p of products) {
       insert.run(
         p.name, p.slug, p.description, p.karat, p.category, p.weightGrams,
-        p.priceCents, p.imageUrl, p.stock, p.featured
+        p.priceCents, p.imageUrl, p.stock, p.featured, 1
       );
     }
+  }
+
+  const replaceLegacyImage = db.prepare('UPDATE products SET image_url = ? WHERE slug = ?');
+  for (const p of products) {
+    replaceLegacyImage.run(p.imageUrl, p.slug);
+  }
+
+  const liveProducts = db.prepare(`
+    SELECT id, name, category FROM products
+    WHERE active = 1
+      AND (image_url IS NULL OR trim(image_url) = '' OR image_url LIKE 'https://images.unsplash.com/%')
+  `).all();
+  const fillImage = db.prepare(`
+    UPDATE products SET image_url = ?
+    WHERE id = ? AND (image_url IS NULL OR trim(image_url) = '' OR image_url LIKE 'https://images.unsplash.com/%')
+  `);
+  for (const product of liveProducts) {
+    const label = `${product.name} ${product.category}`.toLowerCase();
+    const image = /earring|hoop/.test(label)
+      ? '/products/everyday-gold-hoops.svg'
+      : /bracelet|bangle/.test(label)
+        ? '/products/classic-rope-bracelet.svg'
+        : /chain|necklace|cuban|pendant/.test(label)
+          ? (/pendant/.test(label) ? '/products/petite-diamond-pendant.svg' : '/products/fine-paperclip-chain.svg')
+          : /ring|band/.test(label)
+            ? '/products/horizon-wedding-band.svg'
+            : '/products/sculpted-signet-ring.svg';
+    fillImage.run(image, product.id);
   }
 
   const insertSellerProduct = db.prepare(`

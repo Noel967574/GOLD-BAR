@@ -32,7 +32,7 @@ Open `/admin` and sign in with the configured admin account. The Store studio pr
 - **Storefront:** edit branding and public page content.
 - **Messages:** review contact and newsletter submissions.
 
-Sample products are added automatically on a new database. Existing product data is preserved. New orders reserve inventory at checkout; prices and stock are validated by the server.
+Sample products are added automatically on a new database. Their product illustrations are bundled in `client/public/products`, so they work offline. Existing product data and uploaded customer photos are preserved. New orders reserve inventory at checkout; prices and stock are validated by the server.
 
 Default admin: `admin@example.com` / `changeme`. Set `ADMIN_EMAIL` and a strong `ADMIN_PASSWORD` before the first run in any shared or production environment.
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 760">
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#fbf3e5"/><stop offset="1" stop-color="#e6d9c2"/></radialGradient>
+    <linearGradient id="gold" x1=".1" y1=".05" x2=".9" y2=".95"><stop stop-color="#fff2bd"/><stop offset=".24" stop-color="#b58136"/><stop offset=".49" stop-color="#f6db97"/><stop offset=".72" stop-color="#9f702e"/><stop offset="1" stop-color="#f8e3a9"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.7"><feDropShadow dx="3" dy="24" stdDeviation="16" flood-color="#705630" flood-opacity=".25"/></filter>
+  </defs>
+  <rect width="720" height="760" fill="url(#bg)"/>
+  <circle cx="360" cy="355" r="248" fill="#fff" opacity=".18"/>
+  <ellipse cx="360" cy="554" rx="200" ry="26" fill="#745a39" opacity=".12"/>
+  <g filter="url(#shadow)" transform="rotate(-8 360 365)">
+    <circle cx="260" cy="365" r="137" fill="none" stroke="#94652c" stroke-width="48"/>
+    <circle cx="260" cy="346" r="137" fill="none" stroke="url(#gold)" stroke-width="45"/>
+    <circle cx="260" cy="346" r="137" fill="none" stroke="#fff3c9" stroke-width="5" opacity=".75"/>
+    <circle cx="466" cy="385" r="137" fill="none" stroke="#94652c" stroke-width="48"/>
+    <circle cx="466" cy="366" r="137" fill="none" stroke="url(#gold)" stroke-width="45"/>
+    <circle cx="466" cy="366" r="137" fill="none" stroke="#fff3c9" stroke-width="5" opacity=".75"/>
+    <path d="M222 207l38-30 38 30" fill="none" stroke="#fff0bc" stroke-width="11" stroke-linecap="round"/>
+    <path d="M428 227l38-30 38 30" fill="none" stroke="#fff0bc" stroke-width="11" stroke-linecap="round"/>
+  </g>
+  <text x="360" y="690" text-anchor="middle" fill="#8a7658" font-family="Georgia,serif" font-size="21" letter-spacing="5">SOLID GOLD · 14K</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 760">
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#faf2e4"/><stop offset="1" stop-color="#e4d7bf"/></radialGradient>
+    <linearGradient id="gold" x1=".05" y1=".05" x2=".9" y2=".95"><stop stop-color="#fff1b8"/><stop offset=".24" stop-color="#b6853b"/><stop offset=".48" stop-color="#f4d88e"/><stop offset=".7" stop-color="#a1712d"/><stop offset="1" stop-color="#f8e4ad"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.7"><feDropShadow dx="3" dy="23" stdDeviation="16" flood-color="#705630" flood-opacity=".27"/></filter>
+  </defs>
+  <rect width="720" height="760" fill="url(#bg)"/>
+  <circle cx="360" cy="350" r="245" fill="#fff" opacity=".18"/>
+  <ellipse cx="360" cy="556" rx="178" ry="27" fill="#745a39" opacity=".13"/>
+  <g filter="url(#shadow)" transform="rotate(-17 360 375)">
+    <ellipse cx="360" cy="401" rx="170" ry="120" fill="none" stroke="#8f642b" stroke-width="78"/>
+    <ellipse cx="360" cy="382" rx="170" ry="120" fill="none" stroke="url(#gold)" stroke-width="73"/>
+    <ellipse cx="360" cy="382" rx="170" ry="120" fill="none" stroke="#fff2c4" stroke-width="5" opacity=".8"/>
+    <path d="M215 378c12-62 49-104 105-125m181 168c-17 48-49 79-96 98" fill="none" stroke="#fff5d4" stroke-width="10" stroke-linecap="round" opacity=".77"/>
+  </g>
+  <text x="360" y="690" text-anchor="middle" fill="#8a7658" font-family="Georgia,serif" font-size="21" letter-spacing="5">SOLID GOLD · 22K</text>
+</svg>

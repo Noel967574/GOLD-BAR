@@ -23,7 +23,7 @@ export default function ProductCard({ product }) {
           <JewelryArt category={product.category} name={product.name} />
         )}
         <span className="product-karat">{product.karat}k solid gold</span>
-        {product.featured && <span className="product-featured">Bestseller</span>}
+        {Boolean(product.featured) && <span className="product-featured">Bestseller</span>}
       </div>
       <div className="product-info">
         <div className="product-title-row">
