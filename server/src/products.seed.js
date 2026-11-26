@@ -162,6 +162,87 @@ const sellerProducts = [
   }
 ];
 
+const goldBarProducts = [
+  {
+    name: '500 g 999.9 Fine Gold Bar',
+    slug: '500-g-999-9-fine-gold-bar-mwxiaxux',
+    description: 'Sealed 500 g fine-gold bar stamped 999.9 (99.99% pure, 24K). Price is an estimated gold spot value, not a verified retail quote; confirm the current market price before purchase.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 500,
+    priceCents: 5736426,
+    imageUrl: '/api/product-images/gold-bar-500g.jpg',
+    stock: 1,
+    featured: 0,
+    active: 1
+  },
+  {
+    name: '999.9 Fine Gold Bar Assortment (Weights To Confirm)',
+    slug: '999-9-fine-gold-bar-assortment-weights-to-confirm-mwxib8ih',
+    description: 'Photo shows ten individually packaged bars marked fine gold 999.9. Individual bar weights are not legible in the supplied image. Hidden draft: verify each weight and inventory before listing for sale.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 0,
+    priceCents: 0,
+    imageUrl: '/api/product-images/gold-bars-assortment.jpg',
+    stock: 0,
+    featured: 0,
+    active: 0
+  },
+  {
+    name: 'GBK 999.9 Fine Gold Bar Set — 22.5 g',
+    slug: 'gbk-999-9-fine-gold-bar-set-22-5-g-mwxib9ts',
+    description: 'Four fine-gold bars: three stamped 3.75 g and one stamped 11.25 g, 22.5 g total. Stamped 999.9 (99.99% pure, 24K). Price is an estimated gold spot value, not a verified retail quote; confirm the current market price before purchase.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 22.5,
+    priceCents: 258139,
+    imageUrl: '/api/product-images/gbk-gold-bar-set-22-5g.png',
+    stock: 1,
+    featured: 0,
+    active: 1
+  },
+  {
+    name: 'Royal Mint Britannia Gold Bar — 10 g',
+    slug: 'royal-mint-britannia-gold-bar-10-g-mwxibap1',
+    description: 'Royal Mint Britannia 10 g bar. The photo shows two bars, but the fineness stamp is not visible. Hidden draft: verify purity and current price before listing; stock and price are not yet set.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 10,
+    priceCents: 0,
+    imageUrl: '/api/product-images/royal-mint-britannia-10g.png',
+    stock: 0,
+    featured: 0,
+    active: 0
+  },
+  {
+    name: 'Hyrank Fine Gold Bar — 995, 1 kg',
+    slug: 'hyrank-fine-gold-bar-995-1-kg-mwxibc16',
+    description: 'Hyrank 1 kg fine-gold bar stamped 995 (99.5% purity, approximately 23.88K). The catalog purity selector rounds this bullion fineness to 24K; exact fineness is stated here. Price is an estimated spot value, not a verified retail quote; confirm the current market price before purchase.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 1000,
+    priceCents: 11416630,
+    imageUrl: '/api/product-images/hyrank-gold-bar-1kg.png',
+    stock: 1,
+    featured: 0,
+    active: 1
+  },
+  {
+    name: 'Suisse Fine Gold Bar — 999.9, 1 kg',
+    slug: 'suisse-fine-gold-bar-999-9-1-kg-mwxibd18',
+    description: 'Suisse 1 kg fine-gold bar stamped 999.9 (99.99% pure, 24K). Price is an estimated gold spot value, not a verified retail quote; confirm the current market price before purchase.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 1000,
+    priceCents: 11472853,
+    imageUrl: '/api/product-images/suisse-gold-bar-1kg.jpg',
+    stock: 1,
+    featured: 0,
+    active: 1
+  }
+];
+
 export function seedProducts() {
   const insert = db.prepare(`
     INSERT INTO products
@@ -211,6 +292,12 @@ export function seedProducts() {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   for (const p of sellerProducts) {
+    insertSellerProduct.run(
+      p.name, p.slug, p.description, p.karat, p.category, p.weightGrams,
+      p.priceCents, p.imageUrl, p.stock, p.featured, p.active
+    );
+  }
+  for (const p of goldBarProducts) {
     insertSellerProduct.run(
       p.name, p.slug, p.description, p.karat, p.category, p.weightGrams,
       p.priceCents, p.imageUrl, p.stock, p.featured, p.active

@@ -20,7 +20,7 @@ npm run start
 
 ## Deploy to Render
 
-The included `render.yaml` configures one Node web service and a 1 GB persistent disk for the SQLite database and uploaded product photos. In Render, create a Blueprint from this repository and branch `main`, review the paid service and disk charges, and provide `ADMIN_EMAIL` and a strong `ADMIN_PASSWORD` when prompted. Render generates `APP_SECRET`. Production startup refuses to use the default development admin password. Keep the Render disk attached at `/var/data`; removing it deletes the live database and uploaded photos.
+The included `render.yaml` configures one Node web service on Render's free plan. Create a Blueprint from this repository and branch `main`, and provide `ADMIN_EMAIL` and a strong `ADMIN_PASSWORD` when prompted. Render generates `APP_SECRET`. Free services spin down when idle and do not have persistent disks, so the SQLite database and photos uploaded through the admin panel may be lost after a restart or redeploy. Source-controlled product photos remain available.
 
 ## Store management
 
@@ -32,11 +32,11 @@ Open `/admin` and sign in with the configured admin account. The Store studio pr
 - **Storefront:** edit branding and public page content.
 - **Messages:** review contact and newsletter submissions.
 
-Sample products are added automatically on a new database. Their product illustrations are bundled in `client/public/products`, so they work offline. Existing product data and uploaded customer photos are preserved. New orders reserve inventory at checkout; prices and stock are validated by the server.
+Seed jewelry and gold-bar products are added automatically to a new database. Their images are bundled in `client/public/products` and `server/public/product-images`. Gold-bar listings without confirmed prices or weights stay hidden as drafts. New orders reserve inventory at checkout; prices and stock are validated by the server.
 
 Default admin: `admin@example.com` / `changeme`. Set `ADMIN_EMAIL` and a strong `ADMIN_PASSWORD` before the first run in any shared or production environment.
 
-Set `APP_SECRET` to a long random string in production. Without it, a random secret is generated once and saved in `server/data/.session-secret` so sessions survive restarts.
+Render generates `APP_SECRET` for production. For local use, without this variable a random secret is generated and saved in `server/data/.session-secret`.
 
 ## Customer experience
 
