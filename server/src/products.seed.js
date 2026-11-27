@@ -83,6 +83,32 @@ const products = [
 
 const sellerProducts = [
   {
+    name: 'Gold Link Bracelet (Details to Confirm)',
+    slug: 'gold-link-bracelet-details-to-confirm',
+    description: 'Photo shows a gold link bracelet. Confirm purity, weight, current price, and available stock before listing.',
+    karat: 18,
+    category: 'Bracelets',
+    weightGrams: 0,
+    priceCents: 0,
+    imageUrl: '/api/product-images/gold-link-bracelet.jpg',
+    stock: 0,
+    featured: 0,
+    active: 0
+  },
+  {
+    name: 'Gold Rope Chain Necklace (Details to Confirm)',
+    slug: 'gold-rope-chain-necklace-details-to-confirm',
+    description: 'Photo shows a gold rope chain necklace. Confirm purity, weight, current price, and available stock before listing.',
+    karat: 18,
+    category: 'Necklaces',
+    weightGrams: 0,
+    priceCents: 0,
+    imageUrl: '/api/product-images/gold-rope-chain-necklace.jpg',
+    stock: 0,
+    featured: 0,
+    active: 0
+  },
+  {
     name: '14k Solid Twisted Diamond-Cut Rope Chain Necklace',
     slug: 'seller-14k-solid-rope-chain-28in',
     description: '14k yellow gold, solid twisted diamond-cut rope chain. 28 in, 12 mm, 310.9 g.',
@@ -253,6 +279,19 @@ const goldBarProducts = [
     stock: 0,
     featured: 0,
     active: 0
+  },
+  {
+    name: 'Heraeus 999.9 Fine Gold Bar — 1 kg',
+    slug: 'heraeus-fine-gold-bar-9999-1kg',
+    description: 'Heraeus fine gold bar stamped 999.9 (99.99% pure, 24K), net weight 1,000 g. Verify authenticity, current price, and available stock before listing.',
+    karat: 24,
+    category: 'Other',
+    weightGrams: 1000,
+    priceCents: 0,
+    imageUrl: '/api/product-images/heraeus-gold-bar-1kg.jpg',
+    stock: 0,
+    featured: 0,
+    active: 0
   }
 ];
 
@@ -271,32 +310,9 @@ export function seedProducts() {
     }
   }
 
-  const replaceLegacyImage = db.prepare('UPDATE products SET image_url = ? WHERE slug = ?');
+  const replaceLegacyImage = db.prepare('UPDATE products SET image_url = ? WHERE slug = ? AND image_url = ?');
   for (const p of products) {
-    replaceLegacyImage.run(p.imageUrl, p.slug);
-  }
-
-  const liveProducts = db.prepare(`
-    SELECT id, name, category FROM products
-    WHERE active = 1
-      AND (image_url IS NULL OR trim(image_url) = '' OR image_url LIKE 'https://images.unsplash.com/%')
-  `).all();
-  const fillImage = db.prepare(`
-    UPDATE products SET image_url = ?
-    WHERE id = ? AND (image_url IS NULL OR trim(image_url) = '' OR image_url LIKE 'https://images.unsplash.com/%')
-  `);
-  for (const product of liveProducts) {
-    const label = `${product.name} ${product.category}`.toLowerCase();
-    const image = /earring|hoop/.test(label)
-      ? '/products/everyday-gold-hoops.svg'
-      : /bracelet|bangle/.test(label)
-        ? '/products/classic-rope-bracelet.svg'
-        : /chain|necklace|cuban|pendant/.test(label)
-          ? (/pendant/.test(label) ? '/products/petite-diamond-pendant.svg' : '/products/fine-paperclip-chain.svg')
-          : /ring|band/.test(label)
-            ? '/products/horizon-wedding-band.svg'
-            : '/products/sculpted-signet-ring.svg';
-    fillImage.run(image, product.id);
+    if (p.legacyImageUrl) replaceLegacyImage.run(p.imageUrl, p.slug, p.legacyImageUrl);
   }
 
   const insertSellerProduct = db.prepare(`
@@ -310,12 +326,20 @@ export function seedProducts() {
       p.priceCents, p.imageUrl, p.stock, p.featured, p.active
     );
   }
-  const updateGoldBarImage = db.prepare('UPDATE products SET image_url = ? WHERE slug = ?');
+  const updateLegacyGoldBarImage = db.prepare('UPDATE products SET image_url = ? WHERE slug = ? AND image_url = ?');
+  const legacyGoldBarImages = [
+    ['gbk-999-9-fine-gold-bar-set-22-5-g-mwxib9ts', '/api/product-images/gbk-gold-bar-set-22-5g.png', '/api/product-images/gbk-gold-bar-set-22-5g.jpg'],
+    ['royal-mint-britannia-gold-bar-10-g-mwxibap1', '/api/product-images/royal-mint-britannia-10g.png', '/api/product-images/royal-mint-britannia-10g.jpg'],
+    ['hyrank-fine-gold-bar-995-1-kg-mwxibc16', '/api/product-images/hyrank-gold-bar-1kg.png', '/api/product-images/hyrank-gold-bar-1kg.jpg']
+  ];
+  for (const [slug, legacyImageUrl, imageUrl] of legacyGoldBarImages) {
+    updateLegacyGoldBarImage.run(imageUrl, slug, legacyImageUrl);
+  }
+
   for (const p of goldBarProducts) {
     insertSellerProduct.run(
       p.name, p.slug, p.description, p.karat, p.category, p.weightGrams,
       p.priceCents, p.imageUrl, p.stock, p.featured, p.active
     );
-    updateGoldBarImage.run(p.imageUrl, p.slug);
   }
 }
