@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api, money } from '../api.js';
 import { useAuth } from '../auth-store.jsx';
 import { useCart } from '../cart-store.jsx';
@@ -7,6 +7,7 @@ import JewelryArt from '../components/JewelryArt.jsx';
 import Seo from '../components/Seo.jsx';
 
 export default function Checkout() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { items, subtotalCents, setQuantity, clear } = useCart();
   const [form, setForm] = useState({
@@ -22,6 +23,7 @@ export default function Checkout() {
   const [error, setError] = useState('');
   const [copyNote, setCopyNote] = useState('');
   const [sending, setSending] = useState(false);
+  const [reportingPayment, setReportingPayment] = useState(false);
   const [order, setOrder] = useState(null);
   const shipping = subtotalCents >= 15000 || subtotalCents === 0 ? 0 : 1200;
 
@@ -44,6 +46,19 @@ export default function Checkout() {
       setError(e.message);
     } finally {
       setSending(false);
+    }
+  }
+
+  async function reportPayment() {
+    setReportingPayment(true);
+    setError('');
+    try {
+      await api.reportOrderPayment(order.orderId);
+      navigate('/dashboard/orders');
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setReportingPayment(false);
     }
   }
 
@@ -70,8 +85,12 @@ export default function Checkout() {
           </label>
           {copyNote && <p className="form-note">{copyNote}</p>}
           <p className="bitcoin-warning">Send BTC on the <strong>{order.payment.network}</strong> network only. Payments are checked manually before your order is processed. Bitcoin payment is not automatically verified.</p>
+          {error && <p className="form-note error" role="alert">{error}</p>}
+          <button className="btn gold-btn checkout-payment-reported" type="button" onClick={reportPayment} disabled={reportingPayment}>
+            {reportingPayment ? 'Updating your order…' : "I've sent the payment"}
+          </button>
         </div>
-        <p className="muted">We’ll send order updates to {form.email}. Your order is awaiting payment until it is verified.</p>
+        <p className="muted">After you report the payment, your order will show as pending until an administrator verifies it. Updates will be sent to {form.email}.</p>
         <div className="hero-cta"><Link className="btn gold-btn" to="/dashboard/orders">Track your order</Link><Link className="hero-text-link" to="/shop">Keep exploring</Link></div>
       </section>
     );

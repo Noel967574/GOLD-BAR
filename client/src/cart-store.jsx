@@ -1,9 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'aurelia-cart';
 
 export function CartProvider({ children }) {
+  const [notification, setNotification] = useState(null);
+  const notificationId = useRef(0);
   const [items, setItems] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -25,7 +27,16 @@ export function CartProvider({ children }) {
         : item);
       return [...current, { product, quantity: 1 }];
     });
+    setNotification({ id: ++notificationId.current, productName: product.name });
   }
+
+  useEffect(() => {
+    if (!notification) return undefined;
+    const timeout = window.setTimeout(() => {
+      setNotification((current) => current?.id === notification.id ? null : current);
+    }, 3500);
+    return () => window.clearTimeout(timeout);
+  }, [notification]);
 
   function setQuantity(id, quantity) {
     if (quantity < 1) {
@@ -41,10 +52,12 @@ export function CartProvider({ children }) {
     items,
     count: items.reduce((sum, item) => sum + item.quantity, 0),
     subtotalCents: items.reduce((sum, item) => sum + item.product.price_cents * item.quantity, 0),
+    notification,
+    dismissNotification: () => setNotification(null),
     add,
     setQuantity,
     clear: () => setItems([])
-  }), [items]);
+  }), [items, notification]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

@@ -17,6 +17,26 @@ router.get('/', (req, res) => {
   res.json(rows.map(shapeOrder));
 });
 
+router.post('/:id/report-payment', (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid order ID.' });
+
+  const order = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(id, req.user.id);
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  if (order.payment_method !== 'bitcoin') return res.status(409).json({ error: 'This order does not use Bitcoin payment.' });
+  if (order.payment_status === 'reported') return res.json({ ok: true, paymentStatus: 'reported' });
+  if (order.payment_status !== 'pending' || order.status !== 'awaiting_payment')
+    return res.status(409).json({ error: 'This order is not awaiting a payment report.' });
+
+  const result = db.prepare(`
+    UPDATE orders
+    SET payment_status = 'reported', updated_at = datetime('now')
+    WHERE id = ? AND user_id = ? AND payment_status = 'pending' AND status = 'awaiting_payment'
+  `).run(id, req.user.id);
+  if (!result.changes) return res.status(409).json({ error: 'This order is no longer awaiting a payment report.' });
+  res.json({ ok: true, paymentStatus: 'reported' });
+});
+
 router.post('/', submitLimit, (req, res) => {
   const items = Array.isArray(req.body.items) ? req.body.items : [];
   if (!items.length || items.length > 30) return res.status(400).json({ error: 'Add at least one item to your order.' });

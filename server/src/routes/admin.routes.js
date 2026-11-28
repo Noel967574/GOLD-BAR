@@ -146,13 +146,15 @@ router.post('/orders/:id/confirm-payment', (req, res) => {
   if (!order) return res.status(404).json({ error: 'Order not found.' });
   if (order.payment_method !== 'bitcoin') return res.status(409).json({ error: 'This order does not use Bitcoin payment.' });
   if (order.payment_status === 'confirmed') return res.status(409).json({ error: 'Payment has already been confirmed.' });
+  if (!['pending', 'reported'].includes(order.payment_status)) return res.status(409).json({ error: 'This order is not awaiting Bitcoin payment confirmation.' });
   if (order.status !== 'awaiting_payment') return res.status(409).json({ error: 'Only orders awaiting payment can be confirmed.' });
 
-  db.prepare(`
+  const result = db.prepare(`
     UPDATE orders
     SET payment_status = 'confirmed', status = 'processing', updated_at = datetime('now')
-    WHERE id = ? AND payment_status = 'pending' AND status = 'awaiting_payment'
+    WHERE id = ? AND payment_status IN ('pending', 'reported') AND status = 'awaiting_payment'
   `).run(id);
+  if (!result.changes) return res.status(409).json({ error: 'This order is no longer awaiting payment confirmation.' });
   res.json({ ok: true, paymentStatus: 'confirmed', status: 'processing' });
 });
 
@@ -188,7 +190,7 @@ router.patch('/orders/:id', (req, res) => {
     }
     db.prepare(`
       UPDATE orders
-      SET status = ?, payment_status = CASE WHEN ? = 'cancelled' AND payment_status = 'pending' THEN 'cancelled' ELSE payment_status END,
+      SET status = ?, payment_status = CASE WHEN ? = 'cancelled' AND payment_status IN ('pending', 'reported') THEN 'cancelled' ELSE payment_status END,
           updated_at = datetime('now')
       WHERE id = ?
     `).run(status, status, id);

@@ -19,6 +19,7 @@ import Footer from './components/Footer.jsx';
 import Shop from './pages/Shop.jsx';
 import Checkout from './pages/Checkout.jsx';
 import { CartProvider } from './cart-store.jsx';
+import CartNotification from './components/CartNotification.jsx';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
         <div className="shell">
+          <CartNotification />
           <Nav />
           <main>
             <Routes>

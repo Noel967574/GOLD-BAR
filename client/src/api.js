@@ -41,6 +41,7 @@ export const api = {
   summary: () => request('/api/account/summary'),
   orders: () => request('/api/orders'),
   createOrder: (payload) => request('/api/orders', { method: 'POST', body: payload }),
+  reportOrderPayment: (id) => request(`/api/orders/${id}/report-payment`, { method: 'POST', body: {} }),
   transactions: (params = '') => request(`/api/account/transactions${params}`),
   deposit: (payload) => request('/api/account/deposit', { method: 'POST', body: payload }),
   withdraw: (payload) => request('/api/account/withdraw', { method: 'POST', body: payload }),

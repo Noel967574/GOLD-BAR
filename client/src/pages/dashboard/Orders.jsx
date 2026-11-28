@@ -8,15 +8,37 @@ export default function Orders() {
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(null);
+  const [reportingOrderId, setReportingOrderId] = useState(null);
+
+  async function load() {
+    const [orderRows, payment] = await Promise.all([api.orders(), api.paymentInfo()]);
+    setOrders(orderRows);
+    setPaymentInfo(payment);
+  }
 
   useEffect(() => {
-    Promise.all([api.orders(), api.paymentInfo()])
-      .then(([orderRows, payment]) => {
-        setOrders(orderRows);
-        setPaymentInfo(payment);
-      })
-      .catch((e) => setError(e.message));
+    load().catch((e) => setError(e.message));
   }, []);
+
+  useEffect(() => {
+    if (!orders?.some((order) => order.payment_status === 'reported')) return undefined;
+    let active = true;
+    let timeout;
+    async function refreshReportedPayments() {
+      try {
+        const orderRows = await api.orders();
+        if (active) setOrders(orderRows);
+      } catch (e) {
+        if (active) setError(e.message);
+      }
+      if (active) timeout = window.setTimeout(refreshReportedPayments, 10000);
+    }
+    timeout = window.setTimeout(refreshReportedPayments, 10000);
+    return () => {
+      active = false;
+      window.clearTimeout(timeout);
+    };
+  }, [orders]);
 
   async function copyAddress(orderId) {
     try {
@@ -25,6 +47,26 @@ export default function Orders() {
     } catch {
       setError('Copy unavailable. Select and copy the Bitcoin address shown on your order.');
     }
+  }
+
+  async function reportPayment(orderId) {
+    setReportingOrderId(orderId);
+    setError('');
+    try {
+      await api.reportOrderPayment(orderId);
+      await load();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setReportingOrderId(null);
+    }
+  }
+
+  function paymentLabel(status) {
+    if (status === 'confirmed') return 'Payment completed';
+    if (status === 'reported') return 'Payment pending confirmation';
+    if (status === 'cancelled') return 'Payment cancelled';
+    return status === 'pending' ? 'Payment pending' : 'Payment not required';
   }
 
   return (
@@ -41,7 +83,7 @@ export default function Orders() {
               <header className="order-card-head">
                 <div><span className="muted">Order #{order.id}</span><strong>Placed {new Date(`${order.created_at}Z`).toLocaleDateString()}</strong></div>
                 <span className={`order-status ${order.status}`}>{order.status}</span>
-                <span className={`payment-status ${order.payment_status}`}>{order.payment_status === 'confirmed' ? 'Payment confirmed' : order.payment_status === 'pending' ? 'Payment pending' : 'Payment not required'}</span>
+                <span className={`payment-status ${order.payment_status}`}>{paymentLabel(order.payment_status)}</span>
                 <strong className="order-total">{money(order.total_cents)}</strong>
               </header>
               <div className="order-items">
@@ -55,9 +97,18 @@ export default function Orders() {
               {order.payment_method === 'bitcoin' && order.payment_status === 'pending' && paymentInfo && (
                 <div className="order-bitcoin-instructions">
                   <strong>Bitcoin payment required · {money(order.total_cents)}</strong>
-                  <p>Send the BTC equivalent using your wallet’s current rate. Bitcoin network only; payments are manually verified.</p>
+                  <p>Send the BTC equivalent using your wallet’s current rate. Bitcoin network only; payments are manually verified. After sending, let us know below.</p>
                   <div className="bitcoin-address-row"><input readOnly aria-label={`Bitcoin address for order ${order.id}`} value={paymentInfo.address} /><button className="btn gold-btn sm" onClick={() => copyAddress(order.id)}>Copy address</button></div>
                   {copied === order.id && <small className="form-note success">Address copied.</small>}
+                  <button className="btn gold-btn sm order-report-payment" type="button" onClick={() => reportPayment(order.id)} disabled={reportingOrderId === order.id}>
+                    {reportingOrderId === order.id ? 'Updating…' : "I've sent the payment"}
+                  </button>
+                </div>
+              )}
+              {order.payment_method === 'bitcoin' && order.payment_status === 'reported' && (
+                <div className="order-bitcoin-instructions">
+                  <strong>Payment reported · pending confirmation</strong>
+                  <p>Thank you. We’ll manually verify the Bitcoin payment and update this order once it’s confirmed.</p>
                 </div>
               )}
               <footer className="order-card-foot"><span>{order.payment_method === 'bitcoin' ? 'Bitcoin (BTC) · Bitcoin network' : order.payment_method}</span><span>Delivering to {order.city}, {order.country}</span></footer>

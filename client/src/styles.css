@@ -353,6 +353,23 @@ h1, h2, h3, h4 { letter-spacing: -0.035em; font-weight: 500; }
 .product-add { width: 100%; border: 1px solid #d4c7b1; background: transparent; color: #594c38; border-radius: 1px; font-size: .79rem; }
 .product-add:hover { background: #a77c37; color: white; border-color: #a77c37; }
 .product-add:disabled { opacity: .5; }
+.cart-notification {
+  position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 40;
+  display: flex; align-items: center; gap: .85rem;
+  width: min(440px, calc(100vw - 2rem)); padding: 1rem;
+  background: #fff; border: 1px solid #e5dac7; box-shadow: 0 12px 36px rgba(39, 31, 19, .18);
+}
+.cart-notification-message { display: flex; align-items: center; gap: .7rem; flex: 1; min-width: 0; }
+.cart-notification-icon {
+  display: grid; place-items: center; flex: 0 0 2rem; height: 2rem;
+  border-radius: 50%; background: #f1ece3; color: #765a2c; font-weight: 700;
+}
+.cart-notification-copy { display: grid; min-width: 0; line-height: 1.35; }
+.cart-notification-copy strong { font-size: .85rem; }
+.cart-notification-copy > span { overflow: hidden; color: #777065; font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.cart-notification-link { color: #765a2c; font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.cart-notification-link:hover { text-decoration: underline; }
+.cart-notification-dismiss { padding: .2rem; border: 0; background: transparent; color: #777065; font-size: 1.25rem; line-height: 1; cursor: pointer; }
 .care-section { display: grid; grid-template-columns: 1fr 1fr; background: #f1ece3; padding: 5.2rem max(4.5vw, calc((100vw - 1240px)/2)); gap: 8vw; align-items: center; }
 .care-inner h2 { font: 400 clamp(2.4rem,4vw,3.8rem)/1.1 Georgia,serif; margin: .5rem 0 1rem; }
 .care-inner > p:not(.eyebrow) { max-width: 450px; color: #70695e; line-height: 1.8; margin-bottom: 1.7rem; }
@@ -463,6 +480,7 @@ h1, h2, h3, h4 { letter-spacing: -0.035em; font-weight: 500; }
 .order-status.cancelled { background: #f8e9e7; color: #a04f49; }
 .payment-status { display: inline-block; width: fit-content; padding: .3rem .5rem; background: #f2ebdd; color: #796034; font-size: .68rem; text-transform: capitalize; }
 .payment-status.confirmed { background: #e6efe5; color: #47704a; }
+.payment-status.reported { background: #f0e2c7; color: #765a2c; }
 .payment-status.cancelled { background: #f8e9e7; color: #a04f49; }
 .payment-status.not_required { background: #f0eee9; color: #777064; }
 .bitcoin-payment { max-width: 620px; margin: 1.8rem auto; padding: 1.4rem; border: 1px solid #e6ddcc; background: #faf7f0; text-align: left; }
@@ -477,6 +495,7 @@ h1, h2, h3, h4 { letter-spacing: -0.035em; font-weight: 500; }
 .bitcoin-address-row input { min-width: 0; border-radius: 0; border-color: #ded5c5; background: #fff; font: 500 .81rem/1.4 ui-monospace,Consolas,monospace; }
 .bitcoin-address-row .btn { flex: 0 0 auto; }
 .bitcoin-warning { padding-top: .8rem; border-top: 1px solid #e5ddcf; }
+.checkout-payment-reported { width: 100%; margin-top: .4rem; }
 .bitcoin-option { border-color: #d9c9aa; background: #fbf8f1; }
 .bitcoin-option > span:nth-child(2) { flex: 1; }
 .bitcoin-option > strong { color: #887047; font-size: .75rem; }
@@ -485,6 +504,7 @@ h1, h2, h3, h4 { letter-spacing: -0.035em; font-weight: 500; }
 .order-bitcoin-instructions > p { color: #766e62; font-size: .76rem; margin: .35rem 0 .65rem; }
 .order-bitcoin-instructions .bitcoin-address-row { max-width: 600px; }
 .order-bitcoin-instructions .form-note { display: block; margin-top: .4rem; }
+.order-report-payment { margin-top: .65rem; }
 .admin-payment-control { display: grid; align-items: start; gap: .25rem; }
 .admin-payment-control > strong { font-size: .78rem; font-weight: 500; }
 .admin-wallet { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .9rem 1rem; background: #f8f5ef; border: 1px solid #e8e1d5; }
@@ -582,6 +602,7 @@ h1, h2, h3, h4 { letter-spacing: -0.035em; font-weight: 500; }
   .nav-inner { height: 68px; }
   .nav-body { inset-block-start: 68px; }
   .nav-body.is-open { align-items: stretch; }
+  .cart-notification { right: 1rem; bottom: 1rem; left: 1rem; width: auto; }
   .nav-actions { display: flex; flex-wrap: wrap; }
   .nav-bag { margin-right: .5rem; }
   .gold-hero-copy h1 { font-size: 3rem; }
