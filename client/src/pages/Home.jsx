@@ -12,7 +12,7 @@ export default function Home() {
     api.products().then(setProducts).catch((e) => setError(e.message));
   }, []);
 
-  const featured = products.filter((p) => p.featured).slice(0, 3);
+  const featured = products.filter((p) => p.featured);
 
   return (
     <>
